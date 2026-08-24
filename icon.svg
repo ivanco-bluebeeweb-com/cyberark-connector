@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="CyberArk Connector">
+  <defs>
+    <linearGradient id="bg" x1="14" y1="12" x2="114" y2="118" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1B2A4A"/>
+      <stop offset="1" stop-color="#0D1730"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="url(#bg)"/>
+  <circle cx="64" cy="56" r="26" fill="none" stroke="#F47920" stroke-width="6"/>
+  <circle cx="64" cy="56" r="10" fill="#F47920"/>
+  <rect x="58" y="66" width="12" height="22" rx="4" fill="#F47920"/>
+  <path d="M40 98 Q64 112 88 98" fill="none" stroke="#E8ECF4" stroke-width="5" stroke-linecap="round"/>
+</svg>
