@@ -51,7 +51,7 @@ async def cyberark_sidebar(ctx, **kwargs) -> ui.UINode:
                 _field("PVWA base URL", ui.Input(param_name="base_url", placeholder="https://pvwa.acme.com/PasswordVault")),
                 _field("Username", ui.Input(param_name="username", placeholder="API-capable CyberArk username")),
                 _field("Password", ui.Password(param_name="password", placeholder="CyberArk password")),
-            ], full_width=True),
+            ]),
         ])
     labels = ", ".join(c.get("label") or c.get("base_url", "") for c in connections)
     return ui.Stack(direction="v", gap=1, align="stretch", children=[

@@ -1,0 +1,4289 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.11.0",
+  "app_id": "cyberark-connector",
+  "version": "0.1.0",
+  "name": "CyberArk",
+  "description": "Connect your own CyberArk Privileged Access Manager (PVWA) to manage Safes, privileged Accounts, credential retrieval/rotation, Just-In-Time access requests, and Applications, plus review Security Events.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "cyberark:read",
+    "cyberark:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_cyberark",
+      "description": "Connect your own CyberArk PVWA vault by saving its base URL and credentials, after checking they actually work.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.provider.connected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "label": {
+            "default": "",
+            "description": "Friendly vault label, e.g. 'Acme Production Vault'.",
+            "title": "Label",
+            "type": "string"
+          },
+          "base_url": {
+            "description": "PVWA base URL, e.g. 'https://pvwa.acme.com/PasswordVault'.",
+            "title": "Base Url",
+            "type": "string"
+          },
+          "auth_method": {
+            "default": "cyberark",
+            "description": "Authentication method: 'cyberark' or 'radius'.",
+            "title": "Auth Method",
+            "type": "string"
+          },
+          "username": {
+            "description": "CyberArk username with API access.",
+            "title": "Username",
+            "type": "string"
+          },
+          "password": {
+            "description": "CyberArk password.",
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "base_url",
+          "username",
+          "password"
+        ],
+        "title": "ConnectCyberArkParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connection_id": {
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "base_url": {
+            "title": "Base Url",
+            "type": "string"
+          },
+          "auth_method": {
+            "title": "Auth Method",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "connection_id",
+          "label",
+          "base_url",
+          "auth_method"
+        ],
+        "title": "CyberArkConnection",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.connect_cyberark",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "disconnect_cyberark",
+      "description": "Disconnect a CyberArk vault: deletes only the saved credentials. Nothing in CyberArk itself is changed.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.provider.disconnected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "Saved CyberArk vault connection ID to remove from Imperal.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DisconnectCyberArkParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "ok"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.disconnect_cyberark",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected CyberArk vaults.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {},
+      "return_schema": {
+        "$defs": {
+          "CyberArkConnection": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "connection_id": {
+                "title": "Connection Id",
+                "type": "string"
+              },
+              "label": {
+                "title": "Label",
+                "type": "string"
+              },
+              "base_url": {
+                "title": "Base Url",
+                "type": "string"
+              },
+              "auth_method": {
+                "title": "Auth Method",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "connection_id",
+              "label",
+              "base_url",
+              "auth_method"
+            ],
+            "title": "CyberArkConnection",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connections": {
+            "items": {
+              "$ref": "#/$defs/CyberArkConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "connections"
+        ],
+        "title": "ConnectionList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.list_connections",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "audit_vault",
+      "description": "Build one aggregated health report for the connected CyberArk vault: Safe count, Account count, and pending access requests.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ConnectionRefParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "safe_count": {
+            "title": "Safe Count",
+            "type": "integer"
+          },
+          "account_count": {
+            "title": "Account Count",
+            "type": "integer"
+          },
+          "accounts_overdue_rotation": {
+            "title": "Accounts Overdue Rotation",
+            "type": "integer"
+          },
+          "safes_without_owner": {
+            "title": "Safes Without Owner",
+            "type": "integer"
+          },
+          "findings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Findings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "safe_count",
+          "account_count",
+          "accounts_overdue_rotation",
+          "safes_without_owner"
+        ],
+        "title": "HealthAudit",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.audit_vault",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "list_safes",
+      "description": "List Safes in the connected CyberArk vault, optionally filtered by a search string.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "search": {
+            "default": "",
+            "description": "Optional search string matching Safe name.",
+            "title": "Search",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max Safes to return (1-1000).",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListSafesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "CyberArkSafe": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "safe_name": {
+                "title": "Safe Name",
+                "type": "string"
+              },
+              "member_count": {
+                "default": 0,
+                "title": "Member Count",
+                "type": "integer"
+              },
+              "managing_cpm": {
+                "default": "",
+                "title": "Managing Cpm",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "safe_name"
+            ],
+            "title": "CyberArkSafe",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "safes": {
+            "items": {
+              "$ref": "#/$defs/CyberArkSafe"
+            },
+            "title": "Safes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "safes"
+        ],
+        "title": "SafeList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.list_safes",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "get_safe",
+      "description": "Read one CyberArk Safe in full.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "safe_name": {
+            "description": "CyberArk Safe name (its unique identifier).",
+            "title": "Safe Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "safe_name"
+        ],
+        "title": "SafeIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "safe_name": {
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "member_count": {
+            "default": 0,
+            "title": "Member Count",
+            "type": "integer"
+          },
+          "managing_cpm": {
+            "default": "",
+            "title": "Managing Cpm",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "safe_name"
+        ],
+        "title": "CyberArkSafe",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.get_safe",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "create_safe",
+      "description": "Create a new Safe in the connected CyberArk vault.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.safe.created"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "safe_name": {
+            "description": "New Safe's unique name.",
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "description": "Optional description.",
+            "title": "Description",
+            "type": "string"
+          },
+          "managing_cpm": {
+            "default": "",
+            "description": "Optional name of the CPM (Central Policy Manager) that manages password rotation for this Safe.",
+            "title": "Managing Cpm",
+            "type": "string"
+          }
+        },
+        "required": [
+          "safe_name"
+        ],
+        "title": "CreateSafeParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "safe_name": {
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "member_count": {
+            "default": 0,
+            "title": "Member Count",
+            "type": "integer"
+          },
+          "managing_cpm": {
+            "default": "",
+            "title": "Managing Cpm",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "safe_name"
+        ],
+        "title": "CyberArkSafe",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.create_safe",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "list_safe_members",
+      "description": "List the members (users/groups with access) of a CyberArk Safe.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "safe_name": {
+            "description": "CyberArk Safe name (its unique identifier).",
+            "title": "Safe Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "safe_name"
+        ],
+        "title": "SafeIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "SafeMember": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "member_name": {
+                "title": "Member Name",
+                "type": "string"
+              },
+              "member_type": {
+                "default": "",
+                "title": "Member Type",
+                "type": "string"
+              },
+              "permissions": {
+                "additionalProperties": true,
+                "default": {},
+                "title": "Permissions",
+                "type": "object"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "member_name"
+            ],
+            "title": "SafeMember",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/$defs/SafeMember"
+            },
+            "title": "Members",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "members"
+        ],
+        "title": "SafeMemberList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.list_safe_members",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "add_safe_member",
+      "description": "Grant a user or group access to a CyberArk Safe.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.safe.member_added"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "safe_name": {
+            "description": "CyberArk Safe name.",
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "member_name": {
+            "description": "User or group name to add as a Safe member.",
+            "title": "Member Name",
+            "type": "string"
+          },
+          "permissions": {
+            "additionalProperties": true,
+            "description": "Optional explicit permission flags, e.g. {'UseAccounts': true, 'RetrieveAccounts': true}.",
+            "title": "Permissions",
+            "type": "object"
+          }
+        },
+        "required": [
+          "safe_name",
+          "member_name"
+        ],
+        "title": "SafeMemberParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "member_name": {
+            "title": "Member Name",
+            "type": "string"
+          },
+          "member_type": {
+            "default": "",
+            "title": "Member Type",
+            "type": "string"
+          },
+          "permissions": {
+            "additionalProperties": true,
+            "default": {},
+            "title": "Permissions",
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "member_name"
+        ],
+        "title": "SafeMember",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.add_safe_member",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "list_accounts",
+      "description": "List privileged Accounts in the connected CyberArk vault, optionally filtered by a search string or Safe name.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "search": {
+            "default": "",
+            "description": "Optional free-text search (matches account name, username, address).",
+            "title": "Search",
+            "type": "string"
+          },
+          "safe_name": {
+            "default": "",
+            "description": "Optional Safe name filter.",
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max accounts to return (1-1000).",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListAccountsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "CyberArkAccount": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "account_id": {
+                "title": "Account Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "safe_name": {
+                "default": "",
+                "title": "Safe Name",
+                "type": "string"
+              },
+              "platform_id": {
+                "default": "",
+                "title": "Platform Id",
+                "type": "string"
+              },
+              "username": {
+                "default": "",
+                "title": "Username",
+                "type": "string"
+              },
+              "address": {
+                "default": "",
+                "title": "Address",
+                "type": "string"
+              },
+              "last_success_change": {
+                "default": "",
+                "title": "Last Success Change",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "account_id"
+            ],
+            "title": "CyberArkAccount",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "accounts": {
+            "items": {
+              "$ref": "#/$defs/CyberArkAccount"
+            },
+            "title": "Accounts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "accounts"
+        ],
+        "title": "AccountList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.list_accounts",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "get_account",
+      "description": "Read one privileged Account's metadata in full (never the secret itself -- use retrieve_account_password for that).",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID.",
+            "title": "Account Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ],
+        "title": "AccountIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "account_id": {
+            "title": "Account Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "safe_name": {
+            "default": "",
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "platform_id": {
+            "default": "",
+            "title": "Platform Id",
+            "type": "string"
+          },
+          "username": {
+            "default": "",
+            "title": "Username",
+            "type": "string"
+          },
+          "address": {
+            "default": "",
+            "title": "Address",
+            "type": "string"
+          },
+          "last_success_change": {
+            "default": "",
+            "title": "Last Success Change",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "account_id"
+        ],
+        "title": "CyberArkAccount",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.get_account",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "create_account",
+      "description": "Onboard a new privileged Account into a Safe.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.account.created"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "safe_name": {
+            "description": "Safe this account will be stored in.",
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "platform_id": {
+            "description": "Platform ID (account-type template), e.g. 'WinServerLocal', 'UnixSSH'.",
+            "title": "Platform Id",
+            "type": "string"
+          },
+          "address": {
+            "description": "Target system address (hostname or IP).",
+            "title": "Address",
+            "type": "string"
+          },
+          "username": {
+            "description": "Privileged account username.",
+            "title": "Username",
+            "type": "string"
+          },
+          "secret": {
+            "default": "",
+            "description": "Initial password/secret value (optional -- CyberArk can also onboard without one for later rotation).",
+            "title": "Secret",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "description": "Optional friendly account name; CyberArk auto-generates one if omitted.",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "safe_name",
+          "platform_id",
+          "address",
+          "username"
+        ],
+        "title": "CreateAccountParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "account_id": {
+            "title": "Account Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "safe_name": {
+            "default": "",
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "platform_id": {
+            "default": "",
+            "title": "Platform Id",
+            "type": "string"
+          },
+          "username": {
+            "default": "",
+            "title": "Username",
+            "type": "string"
+          },
+          "address": {
+            "default": "",
+            "title": "Address",
+            "type": "string"
+          },
+          "last_success_change": {
+            "default": "",
+            "title": "Last Success Change",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "account_id"
+        ],
+        "title": "CyberArkAccount",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.create_account",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "update_account",
+      "description": "Update selected fields of an existing Account (name, address). Only given fields change.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.account.updated"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID.",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "description": "New friendly account name.",
+            "title": "Name",
+            "type": "string"
+          },
+          "address": {
+            "default": "",
+            "description": "New target system address.",
+            "title": "Address",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ],
+        "title": "UpdateAccountParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "account_id": {
+            "title": "Account Id",
+            "type": "string"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "safe_name": {
+            "default": "",
+            "title": "Safe Name",
+            "type": "string"
+          },
+          "platform_id": {
+            "default": "",
+            "title": "Platform Id",
+            "type": "string"
+          },
+          "username": {
+            "default": "",
+            "title": "Username",
+            "type": "string"
+          },
+          "address": {
+            "default": "",
+            "title": "Address",
+            "type": "string"
+          },
+          "last_success_change": {
+            "default": "",
+            "title": "Last Success Change",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "account_id"
+        ],
+        "title": "CyberArkAccount",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.update_account",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "delete_account",
+      "description": "Permanently delete a privileged Account from CyberArk. Cannot be undone.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.account.deleted"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID.",
+            "title": "Account Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ],
+        "title": "AccountIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "ok"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.delete_account",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "retrieve_account_password",
+      "description": "Retrieve a privileged Account's current password/secret. This exposes real credentials -- use with care.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.account.password_retrieved"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID.",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "reason": {
+            "default": "",
+            "description": "Reason/ticket-id for this retrieval, required by Safes configured for dual control or strict auditing.",
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ],
+        "title": "RetrievePasswordParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "account_id": {
+            "title": "Account Id",
+            "type": "string"
+          },
+          "password": {
+            "title": "Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "account_id",
+          "password"
+        ],
+        "title": "RetrievedPassword",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.retrieve_account_password",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "verify_account_password",
+      "description": "Verify a privileged Account's stored password still matches the target system (CyberArk's own reconciliation check).",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.account.password_verified"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID.",
+            "title": "Account Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ],
+        "title": "AccountIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "ok"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.verify_account_password",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "reconcile_account_password",
+      "description": "Force-reconcile a privileged Account's password using its Safe's configured reconciliation account -- use after a manual out-of-band change desynced the vault.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.account.password_reconciled"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID.",
+            "title": "Account Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ],
+        "title": "AccountIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "ok"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.reconcile_account_password",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "change_account_password",
+      "description": "Rotate a privileged Account's password immediately (CPM-managed or explicit new value). This changes the real credential in the target system.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.account.password_changed"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID.",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "new_password": {
+            "default": "",
+            "description": "Optional explicit new password. Omit to let CyberArk auto-generate one per the account's platform policy.",
+            "title": "New Password",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ],
+        "title": "ChangePasswordParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "ok"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.change_account_password",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "create_access_request",
+      "description": "Create a Just-In-Time access request for a privileged Account -- for Safes configured with dual control, this must be confirmed before retrieval succeeds.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.access_request.created"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID.",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Business reason for requesting access -- required by CyberArk for the audit trail.",
+            "title": "Reason",
+            "type": "string"
+          },
+          "multiple_access": {
+            "default": false,
+            "description": "Whether this request permits multiple retrievals instead of a single one.",
+            "title": "Multiple Access",
+            "type": "boolean"
+          },
+          "access_from": {
+            "default": "",
+            "description": "ISO 8601 start time for the access window (optional).",
+            "title": "Access From",
+            "type": "string"
+          },
+          "access_to": {
+            "default": "",
+            "description": "ISO 8601 end time for the access window (optional).",
+            "title": "Access To",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id",
+          "reason"
+        ],
+        "title": "CreateAccessRequestParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "default": "",
+            "title": "Status",
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "account_id": {
+            "title": "Account Id",
+            "type": "string"
+          },
+          "reason": {
+            "default": "",
+            "title": "Reason",
+            "type": "string"
+          },
+          "requestor": {
+            "default": "",
+            "title": "Requestor",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "request_id",
+          "account_id"
+        ],
+        "title": "AccessRequest",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.create_access_request",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "list_access_requests",
+      "description": "List Just-In-Time access requests for a privileged Account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "account_id": {
+            "description": "CyberArk account ID to list access requests for.",
+            "title": "Account Id",
+            "type": "string"
+          },
+          "status_filter": {
+            "default": "",
+            "description": "Optional status filter: pending, confirmed, cancelled.",
+            "title": "Status Filter",
+            "type": "string"
+          }
+        },
+        "required": [
+          "account_id"
+        ],
+        "title": "ListAccessRequestsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "AccessRequest": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "default": "",
+                "title": "Status",
+                "type": "string"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "request_id": {
+                "title": "Request Id",
+                "type": "string"
+              },
+              "account_id": {
+                "title": "Account Id",
+                "type": "string"
+              },
+              "reason": {
+                "default": "",
+                "title": "Reason",
+                "type": "string"
+              },
+              "requestor": {
+                "default": "",
+                "title": "Requestor",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "request_id",
+              "account_id"
+            ],
+            "title": "AccessRequest",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "requests": {
+            "items": {
+              "$ref": "#/$defs/AccessRequest"
+            },
+            "title": "Requests",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "requests"
+        ],
+        "title": "AccessRequestList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.list_access_requests",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "confirm_access_request",
+      "description": "Confirm a pending Just-In-Time access request on a dual-control Safe -- required from a second approver before the requestor can retrieve the credential.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.access_request.confirmed"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "request_id": {
+            "description": "CyberArk access request ID.",
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id"
+        ],
+        "title": "AccessRequestIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "ok"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.confirm_access_request",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "cancel_access_request",
+      "description": "Cancel a pending Just-In-Time access request before it is confirmed or used.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "cyberark.access_request.cancelled"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "request_id": {
+            "description": "CyberArk access request ID.",
+            "title": "Request Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id"
+        ],
+        "title": "AccessRequestIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "ok"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.cancel_access_request",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "list_applications",
+      "description": "List AAM/CCP Application identities configured on the connected CyberArk vault -- the programmatic identities that can fetch credentials without a human.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListApplicationsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "CyberArkApplication": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "app_id": {
+                "title": "App Id",
+                "type": "string"
+              },
+              "disabled": {
+                "default": false,
+                "title": "Disabled",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "app_id"
+            ],
+            "title": "CyberArkApplication",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "applications": {
+            "items": {
+              "$ref": "#/$defs/CyberArkApplication"
+            },
+            "title": "Applications",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "applications"
+        ],
+        "title": "ApplicationList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.list_applications",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "get_application",
+      "description": "Read one AAM/CCP Application identity in full.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "app_id": {
+            "description": "CyberArk Application (AAM/CCP) ID.",
+            "title": "App Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "app_id"
+        ],
+        "title": "ApplicationIdParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "app_id": {
+            "title": "App Id",
+            "type": "string"
+          },
+          "disabled": {
+            "default": false,
+            "title": "Disabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "app_id"
+        ],
+        "title": "CyberArkApplication",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.get_application",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "list_platforms",
+      "description": "List account-type Platforms (templates) configured on the connected CyberArk vault, e.g. 'WinServerLocal', 'UnixSSH' -- required when onboarding a new Account.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "active_only": {
+            "default": true,
+            "description": "Only return active platforms.",
+            "title": "Active Only",
+            "type": "boolean"
+          }
+        },
+        "title": "ListPlatformsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "CyberArkPlatform": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "platform_id": {
+                "title": "Platform Id",
+                "type": "string"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "active": {
+                "default": true,
+                "title": "Active",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "platform_id"
+            ],
+            "title": "CyberArkPlatform",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "platforms": {
+            "items": {
+              "$ref": "#/$defs/CyberArkPlatform"
+            },
+            "title": "Platforms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "platforms"
+        ],
+        "title": "PlatformList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.list_platforms",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    },
+    {
+      "name": "list_security_events",
+      "description": "Read the Security Events audit trail for the connected CyberArk vault -- who accessed or changed what, and when.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional saved CyberArk vault connection ID. Omit to use the first connected vault.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "search": {
+            "default": "",
+            "description": "Optional free-text filter (user, safe, or action).",
+            "title": "Search",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "description": "Max events to return (1-500).",
+            "title": "Limit",
+            "type": "integer"
+          }
+        },
+        "title": "ListSecurityEventsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "SecurityEvent": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "timestamp": {
+                "default": "",
+                "title": "Timestamp",
+                "type": "string"
+              },
+              "user": {
+                "default": "",
+                "title": "User",
+                "type": "string"
+              },
+              "action": {
+                "default": "",
+                "title": "Action",
+                "type": "string"
+              },
+              "safe_name": {
+                "default": "",
+                "title": "Safe Name",
+                "type": "string"
+              },
+              "detail": {
+                "default": "",
+                "title": "Detail",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "SecurityEvent",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/$defs/SecurityEvent"
+            },
+            "title": "Events",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "events"
+        ],
+        "title": "SecurityEventList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "cyberark-connector.list_security_events",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "cyberark"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 715,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
+  "secrets": [
+    {
+      "name": "cyberark_connections",
+      "description": "JSON list of connected CyberArk PVWA vaults and encrypted credentials. Managed only through connect_cyberark and disconnect_cyberark.",
+      "required": true,
+      "write_mode": "both",
+      "max_bytes": 65536,
+      "scope": "user",
+      "rotation_hint_days": 90
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "secrets",
+      "slot": "right",
+      "title": "Secrets",
+      "tree": {},
+      "icon": "KeyRound",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "cyberark_sidebar",
+      "slot": "left",
+      "title": "CyberArk",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "cyberark_connect_help",
+      "slot": "center",
+      "title": "Connect CyberArk",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "cyberark_safes",
+      "slot": "center",
+      "title": "Safes",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "cyberark_accounts",
+      "slot": "center",
+      "title": "Accounts",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "cyberark_applications",
+      "slot": "center",
+      "title": "Applications",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "cyberark_platforms",
+      "slot": "center",
+      "title": "Platforms",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "cyberark_security_events",
+      "slot": "center",
+      "title": "Security Events",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "cyberark_settings",
+      "slot": "center",
+      "title": "CyberArk settings",
+      "tree": {},
+      "icon": "Settings",
+      "refresh": "manual",
+      "center_overlay": true
+    }
+  ]
+}
