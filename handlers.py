@@ -101,7 +101,7 @@ async def disconnect_cyberark(ctx, params: DisconnectCyberArkParams) -> ActionRe
 
 
 @chat.function("list_connections", "List the connected CyberArk vaults.", action_type="read", chain_callable=True, data_model=ConnectionList, event="cyberark-connector.list_connections")
-async def list_connections(ctx, params: ConnectionRefParams | None = None) -> ActionResult:
+async def list_connections(ctx, params: NoParams) -> ActionResult:
     """List the connected CyberArk vaults."""
     connections = await _load_connections(ctx)
     return ActionResult(data=ConnectionList(connections=[_connection_entity(c) for c in connections]))
