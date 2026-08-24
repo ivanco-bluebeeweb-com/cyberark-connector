@@ -290,7 +290,11 @@
       "chain_callable": true,
       "effects": [],
       "id_projection": "",
-      "params_schema": {},
+      "params_schema": {
+        "properties": {},
+        "title": "NoParams",
+        "type": "object"
+      },
       "return_schema": {
         "$defs": {
           "CyberArkConnection": {

@@ -17,8 +17,8 @@ from schemas import (
     CyberArkSafe, DeleteResult, DisconnectCyberArkParams, HealthAudit,
     ListAccessRequestsParams, ListAccountsParams, ListApplicationsParams,
     ListPlatformsParams, ListSafesParams, ListSecurityEventsParams,
-    PlatformList, RetrievePasswordParams, RetrievedPassword, SafeIdParams,
-    SafeList, SafeMember, SafeMemberList, SafeMemberParams,
+    NoParams, PlatformList, RetrievePasswordParams, RetrievedPassword,
+    SafeIdParams, SafeList, SafeMember, SafeMemberList, SafeMemberParams,
     SecurityEvent, SecurityEventList, UpdateAccountParams,
 )
 
