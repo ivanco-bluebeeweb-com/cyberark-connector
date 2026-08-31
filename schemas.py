@@ -118,6 +118,8 @@ class AuditSafesParams(ConnectionRefParams):
 # ---- SDL result entities ----
 
 class CyberArkConnection(sdl.Entity):
+    id: str = ""
+    title: str = ""
     connection_id: str
     label: str
     base_url: str
@@ -125,15 +127,21 @@ class CyberArkConnection(sdl.Entity):
 
 
 class ConnectionList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     connections: list[CyberArkConnection]
 
 
 class DeleteResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     ok: bool
     detail: str = ""
 
 
 class CyberArkSafe(sdl.Entity):
+    id: str = ""
+    title: str = ""
     safe_name: str
     description: str = ""
     member_count: int = 0
@@ -141,20 +149,28 @@ class CyberArkSafe(sdl.Entity):
 
 
 class SafeList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     safes: list[CyberArkSafe]
 
 
 class SafeMember(sdl.Entity):
+    id: str = ""
+    title: str = ""
     member_name: str
     member_type: str = ""
     permissions: dict = {}
 
 
 class SafeMemberList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     members: list[SafeMember]
 
 
 class CyberArkAccount(sdl.Entity):
+    id: str = ""
+    title: str = ""
     account_id: str
     name: str = ""
     safe_name: str = ""
@@ -165,15 +181,21 @@ class CyberArkAccount(sdl.Entity):
 
 
 class AccountList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     accounts: list[CyberArkAccount]
 
 
 class RetrievedPassword(sdl.Entity):
+    id: str = ""
+    title: str = ""
     account_id: str
     password: str
 
 
 class AccessRequest(sdl.Entity):
+    id: str = ""
+    title: str = ""
     request_id: str
     account_id: str
     status: str = ""
@@ -182,30 +204,42 @@ class AccessRequest(sdl.Entity):
 
 
 class AccessRequestList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     requests: list[AccessRequest]
 
 
 class CyberArkApplication(sdl.Entity):
+    id: str = ""
+    title: str = ""
     app_id: str
     description: str = ""
     disabled: bool = False
 
 
 class ApplicationList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     applications: list[CyberArkApplication]
 
 
 class CyberArkPlatform(sdl.Entity):
+    id: str = ""
+    title: str = ""
     platform_id: str
     name: str = ""
     active: bool = True
 
 
 class PlatformList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     platforms: list[CyberArkPlatform]
 
 
 class SecurityEvent(sdl.Entity):
+    id: str = ""
+    title: str = ""
     timestamp: str = ""
     user: str = ""
     action: str = ""
@@ -214,10 +248,14 @@ class SecurityEvent(sdl.Entity):
 
 
 class SecurityEventList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     events: list[SecurityEvent]
 
 
 class HealthAudit(sdl.Entity):
+    id: str = ""
+    title: str = ""
     safe_count: int
     account_count: int
     accounts_overdue_rotation: int
