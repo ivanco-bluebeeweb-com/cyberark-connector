@@ -86,7 +86,7 @@ async def connect_cyberark(ctx, params: ConnectCyberArkParams) -> ActionResult:
     }
     connections.append(entry)
     await _save_connections(ctx, connections)
-    return ActionResult(data=_connection_entity(entry), message=f"Connected to CyberArk vault '{entry['label']}'.")
+    return ActionResult.success(_connection_entity(entry), summary=f"Connected to CyberArk vault '{entry['label']}'.")
 
 
 @chat.function("disconnect_cyberark", "Disconnect a CyberArk vault: deletes only the saved credentials. Nothing in CyberArk itself is changed.", action_type="write", chain_callable=True, data_model=DeleteResult, event="cyberark-connector.disconnect_cyberark", effects=["cyberark.provider.disconnected"])
@@ -97,14 +97,14 @@ async def disconnect_cyberark(ctx, params: DisconnectCyberArkParams) -> ActionRe
     if len(remaining) == len(connections):
         raise RuntimeError(f"No CyberArk connection found with id '{params.connection_id}'.")
     await _save_connections(ctx, remaining)
-    return ActionResult(data=DeleteResult(ok=True, detail=params.connection_id), message="Disconnected from CyberArk.")
+    return ActionResult.success(DeleteResult(ok=True, detail=params.connection_id), summary="Disconnected from CyberArk.")
 
 
 @chat.function("list_connections", "List the connected CyberArk vaults.", action_type="read", chain_callable=True, data_model=ConnectionList, event="cyberark-connector.list_connections")
 async def list_connections(ctx, params: NoParams) -> ActionResult:
     """List the connected CyberArk vaults."""
     connections = await _load_connections(ctx)
-    return ActionResult(data=ConnectionList(connections=[_connection_entity(c) for c in connections]))
+    return ActionResult.success(ConnectionList(connections=[_connection_entity(c) for c in connections]), summary="Connections listed.")
 
 
 @chat.function("audit_vault", "Build one aggregated health report for the connected CyberArk vault: Safe count, Account count, and pending access requests.", action_type="read", chain_callable=True, data_model=HealthAudit, event="cyberark-connector.audit_vault")
@@ -128,13 +128,13 @@ async def audit_vault(ctx, params: ConnectionRefParams) -> ActionResult:
         findings.append(f"{overdue} account(s) have automatic management disabled or a failed last rotation.")
     if safe_count == 0:
         findings.append("No Safes visible to this API user -- check its Safe permissions.")
-    return ActionResult(data=HealthAudit(
+    return ActionResult.success(HealthAudit(
         safe_count=safe_count,
         account_count=account_count,
         accounts_overdue_rotation=overdue,
         safes_without_owner=0,
         findings=findings,
-    ))
+    ), summary="Vault audit ready.")
 
 
 @chat.function("list_safes", "List Safes in the connected CyberArk vault, optionally filtered by a search string.", action_type="read", chain_callable=True, data_model=SafeList, event="cyberark-connector.list_safes")
@@ -151,7 +151,7 @@ async def list_safes(ctx, params: ListSafesParams) -> ActionResult:
         safe_name=s.get("safeName", ""), description=s.get("description", ""),
         member_count=s.get("numberOfDaysRetention", 0), managing_cpm=s.get("managingCPM", ""),
     ) for s in items]
-    return ActionResult(data=SafeList(safes=safes))
+    return ActionResult.success(SafeList(safes=safes), summary="Safes listed.")
 
 
 @chat.function("get_safe", "Read one CyberArk Safe in full.", action_type="read", chain_callable=True, data_model=CyberArkSafe, event="cyberark-connector.get_safe")
@@ -160,10 +160,10 @@ async def get_safe(ctx, params: SafeIdParams) -> ActionResult:
     c = await _resolve_connection(ctx, params.connection_id)
     client = _client_for(c)
     s, _ = await client.request("GET", f"/Safes/{params.safe_name}")
-    return ActionResult(data=CyberArkSafe(
+    return ActionResult.success(CyberArkSafe(
         safe_name=s.get("safeName", ""), description=s.get("description", ""),
         member_count=s.get("numberOfDaysRetention", 0), managing_cpm=s.get("managingCPM", ""),
-    ))
+    ), summary="Safe retrieved.")
 
 
 @chat.function("create_safe", "Create a new Safe in the connected CyberArk vault.", action_type="write", chain_callable=True, data_model=CyberArkSafe, event="cyberark-connector.create_safe", effects=["cyberark.safe.created"])
@@ -175,10 +175,10 @@ async def create_safe(ctx, params: CreateSafeParams) -> ActionResult:
     if params.managing_cpm:
         body["ManagingCPM"] = params.managing_cpm
     s, _ = await client.request("POST", "/Safes", json=body)
-    return ActionResult(data=CyberArkSafe(
+    return ActionResult.success(CyberArkSafe(
         safe_name=s.get("safeName", params.safe_name), description=s.get("description", params.description),
         member_count=0, managing_cpm=s.get("managingCPM", ""),
-    ), message=f"Safe '{params.safe_name}' created.")
+    ), summary=f"Safe '{params.safe_name}' created.")
 
 
 @chat.function("list_safe_members", "List the members (users/groups with access) of a CyberArk Safe.", action_type="read", chain_callable=True, data_model=SafeMemberList, event="cyberark-connector.list_safe_members")
@@ -192,7 +192,7 @@ async def list_safe_members(ctx, params: SafeIdParams) -> ActionResult:
         member_name=m.get("memberName", ""), member_type=m.get("memberType", ""),
         permissions=m.get("permissions", {}),
     ) for m in items]
-    return ActionResult(data=SafeMemberList(members=members))
+    return ActionResult.success(SafeMemberList(members=members), summary="Safe members listed.")
 
 
 @chat.function("add_safe_member", "Grant a user or group access to a CyberArk Safe.", action_type="write", chain_callable=True, data_model=SafeMember, event="cyberark-connector.add_safe_member", effects=["cyberark.safe.member_added"])
@@ -203,10 +203,10 @@ async def add_safe_member(ctx, params: SafeMemberParams) -> ActionResult:
     body = {"memberName": params.member_name, "searchIn": "Vault", "membershipExpirationDate": None,
             "permissions": {"useAccounts": True, "retrieveAccounts": True, "listAccounts": True}}
     m, _ = await client.request("POST", f"/Safes/{params.safe_name}/Members", json=body)
-    return ActionResult(data=SafeMember(
+    return ActionResult.success(SafeMember(
         member_name=m.get("memberName", params.member_name), member_type=m.get("memberType", ""),
         permissions=m.get("permissions", {}),
-    ), message=f"'{params.member_name}' added to Safe '{params.safe_name}'.")
+    ), summary=f"'{params.member_name}' added to Safe '{params.safe_name}'.")
 
 
 @chat.function("list_accounts", "List privileged Accounts in the connected CyberArk vault, optionally filtered by a search string or Safe name.", action_type="read", chain_callable=True, data_model=AccountList, event="cyberark-connector.list_accounts")
@@ -222,7 +222,7 @@ async def list_accounts(ctx, params: ListAccountsParams) -> ActionResult:
     data, _ = await client.request("GET", "/Accounts", params=q)
     items = (data or {}).get("value", [])
     accounts = [_account_entity(a) for a in items]
-    return ActionResult(data=AccountList(accounts=accounts))
+    return ActionResult.success(AccountList(accounts=accounts), summary="Accounts listed.")
 
 
 def _account_entity(a: dict) -> CyberArkAccount:
@@ -239,7 +239,7 @@ async def get_account(ctx, params: AccountIdParams) -> ActionResult:
     c = await _resolve_connection(ctx, params.connection_id)
     client = _client_for(c)
     a, _ = await client.request("GET", f"/Accounts/{params.account_id}")
-    return ActionResult(data=_account_entity(a))
+    return ActionResult.success(_account_entity(a), summary="Account retrieved.")
 
 
 @chat.function("create_account", "Onboard a new privileged Account into a Safe.", action_type="write", chain_callable=True, data_model=CyberArkAccount, event="cyberark-connector.create_account", effects=["cyberark.account.created"])
@@ -256,7 +256,7 @@ async def create_account(ctx, params: CreateAccountParams) -> ActionResult:
     if params.secret:
         body["secret"] = params.secret
     a, _ = await client.request("POST", "/Accounts", json=body)
-    return ActionResult(data=_account_entity(a), message=f"Account '{a.get('userName', params.username)}' onboarded into Safe '{params.safe_name}'.")
+    return ActionResult.success(_account_entity(a), summary=f"Account '{a.get('userName', params.username)}' onboarded into Safe '{params.safe_name}'.")
 
 
 @chat.function("update_account", "Update selected fields of an existing Account (name, address). Only given fields change.", action_type="write", chain_callable=True, data_model=CyberArkAccount, event="cyberark-connector.update_account", effects=["cyberark.account.updated"])
@@ -272,7 +272,7 @@ async def update_account(ctx, params: UpdateAccountParams) -> ActionResult:
     if not ops:
         raise RuntimeError("Provide at least one field to update (name or address).")
     a, _ = await client.request("PATCH", f"/Accounts/{params.account_id}", json=ops)
-    return ActionResult(data=_account_entity(a), message="Account updated.")
+    return ActionResult.success(_account_entity(a), summary="Account updated.")
 
 
 @chat.function("delete_account", "Permanently delete a privileged Account from CyberArk. Cannot be undone.", action_type="write", chain_callable=True, data_model=DeleteResult, event="cyberark-connector.delete_account", effects=["cyberark.account.deleted"])
@@ -281,7 +281,7 @@ async def delete_account(ctx, params: AccountIdParams) -> ActionResult:
     c = await _resolve_connection(ctx, params.connection_id)
     client = _client_for(c)
     await client.request("DELETE", f"/Accounts/{params.account_id}")
-    return ActionResult(data=DeleteResult(ok=True, detail=params.account_id), message="Account deleted.")
+    return ActionResult.success(DeleteResult(ok=True, detail=params.account_id), summary="Account deleted.")
 
 
 @chat.function("retrieve_account_password", "Retrieve a privileged Account's current password/secret. This exposes real credentials -- use with care.", action_type="write", chain_callable=True, data_model=RetrievedPassword, event="cyberark-connector.retrieve_account_password", effects=["cyberark.account.password_retrieved"])
@@ -292,7 +292,7 @@ async def retrieve_account_password(ctx, params: RetrievePasswordParams) -> Acti
     body = {"Reason": params.reason} if params.reason else {}
     secret, _ = await client.request("POST", f"/Accounts/{params.account_id}/Password/Retrieve", json=body)
     value = secret if isinstance(secret, str) else str(secret)
-    return ActionResult(data=RetrievedPassword(account_id=params.account_id, password=value), message="Password retrieved. Handle it as a live secret.")
+    return ActionResult.success(RetrievedPassword(account_id=params.account_id, password=value), summary="Password retrieved. Handle it as a live secret.")
 
 
 @chat.function("verify_account_password", "Verify a privileged Account's stored password still matches the target system (CyberArk's own reconciliation check).", action_type="write", chain_callable=True, data_model=DeleteResult, event="cyberark-connector.verify_account_password", effects=["cyberark.account.password_verified"])
@@ -301,7 +301,7 @@ async def verify_account_password(ctx, params: AccountIdParams) -> ActionResult:
     c = await _resolve_connection(ctx, params.connection_id)
     client = _client_for(c)
     await client.request("POST", f"/Accounts/{params.account_id}/Verify")
-    return ActionResult(data=DeleteResult(ok=True, detail=params.account_id), message="Verification requested. CyberArk's CPM will confirm the credential asynchronously.")
+    return ActionResult.success(DeleteResult(ok=True, detail=params.account_id), summary="Verification requested. CyberArk's CPM will confirm the credential asynchronously.")
 
 
 @chat.function("reconcile_account_password", "Force-reconcile a privileged Account's password using its Safe's configured reconciliation account -- use after a manual out-of-band change desynced the vault.", action_type="write", chain_callable=True, data_model=DeleteResult, event="cyberark-connector.reconcile_account_password", effects=["cyberark.account.password_reconciled"])
@@ -310,7 +310,7 @@ async def reconcile_account_password(ctx, params: AccountIdParams) -> ActionResu
     c = await _resolve_connection(ctx, params.connection_id)
     client = _client_for(c)
     await client.request("POST", f"/Accounts/{params.account_id}/Reconcile")
-    return ActionResult(data=DeleteResult(ok=True, detail=params.account_id), message="Reconciliation requested. CyberArk's CPM will process it asynchronously.")
+    return ActionResult.success(DeleteResult(ok=True, detail=params.account_id), summary="Reconciliation requested. CyberArk's CPM will process it asynchronously.")
 
 
 @chat.function("change_account_password", "Rotate a privileged Account's password immediately (CPM-managed or explicit new value). This changes the real credential in the target system.", action_type="write", chain_callable=True, data_model=DeleteResult, event="cyberark-connector.change_account_password", effects=["cyberark.account.password_changed"])
@@ -322,7 +322,7 @@ async def change_account_password(ctx, params: ChangePasswordParams) -> ActionRe
     if params.new_password:
         body["NewCredentials"] = params.new_password
     await client.request("POST", f"/Accounts/{params.account_id}/Change", json=body)
-    return ActionResult(data=DeleteResult(ok=True, detail=params.account_id), message="Password rotation requested. CyberArk's CPM will apply it on the target system shortly.")
+    return ActionResult.success(DeleteResult(ok=True, detail=params.account_id), summary="Password rotation requested. CyberArk's CPM will apply it on the target system shortly.")
 
 
 @chat.function("create_access_request", "Create a Just-In-Time access request for a privileged Account -- for Safes configured with dual control, this must be confirmed before retrieval succeeds.", action_type="write", chain_callable=True, data_model=AccessRequest, event="cyberark-connector.create_access_request", effects=["cyberark.access_request.created"])
@@ -336,7 +336,7 @@ async def create_access_request(ctx, params: CreateAccessRequestParams) -> Actio
     if params.access_to:
         body["AccessTo"] = params.access_to
     data, _ = await client.request("POST", f"/Accounts/{params.account_id}/Requests", json=body)
-    return ActionResult(data=_access_request_entity(data or {}, params.account_id), message="Access request created.")
+    return ActionResult.success(_access_request_entity(data or {}, params.account_id), summary="Access request created.")
 
 
 def _access_request_entity(r: dict, account_id: str) -> AccessRequest:
@@ -354,7 +354,7 @@ async def list_access_requests(ctx, params: ListAccessRequestsParams) -> ActionR
     data, _ = await client.request("GET", f"/Accounts/{params.account_id}/Requests")
     items = (data or {}).get("value", data if isinstance(data, list) else [])
     requests = [_access_request_entity(r, params.account_id) for r in items]
-    return ActionResult(data=AccessRequestList(requests=requests))
+    return ActionResult.success(AccessRequestList(requests=requests), summary="Access requests listed.")
 
 
 @chat.function("confirm_access_request", "Confirm a pending Just-In-Time access request on a dual-control Safe -- required from a second approver before the requestor can retrieve the credential.", action_type="write", chain_callable=True, data_model=DeleteResult, event="cyberark-connector.confirm_access_request", effects=["cyberark.access_request.confirmed"])
@@ -363,7 +363,7 @@ async def confirm_access_request(ctx, params: AccessRequestIdParams) -> ActionRe
     c = await _resolve_connection(ctx, params.connection_id)
     client = _client_for(c)
     await client.request("POST", f"/Requests/{params.request_id}/Confirm")
-    return ActionResult(data=DeleteResult(ok=True, detail=params.request_id), message="Access request confirmed.")
+    return ActionResult.success(DeleteResult(ok=True, detail=params.request_id), summary="Access request confirmed.")
 
 
 @chat.function("cancel_access_request", "Cancel a pending Just-In-Time access request before it is confirmed or used.", action_type="write", chain_callable=True, data_model=DeleteResult, event="cyberark-connector.cancel_access_request", effects=["cyberark.access_request.cancelled"])
@@ -372,7 +372,7 @@ async def cancel_access_request(ctx, params: AccessRequestIdParams) -> ActionRes
     c = await _resolve_connection(ctx, params.connection_id)
     client = _client_for(c)
     await client.request("DELETE", f"/Requests/{params.request_id}")
-    return ActionResult(data=DeleteResult(ok=True, detail=params.request_id), message="Access request cancelled.")
+    return ActionResult.success(DeleteResult(ok=True, detail=params.request_id), summary="Access request cancelled.")
 
 
 @chat.function("list_applications", "List AAM/CCP Application identities configured on the connected CyberArk vault -- the programmatic identities that can fetch credentials without a human.", action_type="read", chain_callable=True, data_model=ApplicationList, event="cyberark-connector.list_applications")
@@ -383,7 +383,7 @@ async def list_applications(ctx, params: ListApplicationsParams) -> ActionResult
     data, _ = await client.request("GET", "/Applications")
     items = (data or {}).get("application", data if isinstance(data, list) else [])
     apps = [CyberArkApplication(app_id=a.get("AppID", a.get("appId", "")), description=a.get("Description", ""), disabled=a.get("Disabled", False)) for a in items]
-    return ActionResult(data=ApplicationList(applications=apps))
+    return ActionResult.success(ApplicationList(applications=apps), summary="Applications listed.")
 
 
 @chat.function("get_application", "Read one AAM/CCP Application identity in full.", action_type="read", chain_callable=True, data_model=CyberArkApplication, event="cyberark-connector.get_application")
@@ -393,7 +393,7 @@ async def get_application(ctx, params: ApplicationIdParams) -> ActionResult:
     client = _client_for(c)
     data, _ = await client.request("GET", f"/Applications/{params.app_id}")
     a = data or {}
-    return ActionResult(data=CyberArkApplication(app_id=a.get("AppID", params.app_id), description=a.get("Description", ""), disabled=a.get("Disabled", False)))
+    return ActionResult.success(CyberArkApplication(app_id=a.get("AppID", params.app_id), description=a.get("Description", ""), disabled=a.get("Disabled", False)), summary="Application retrieved.")
 
 
 @chat.function("list_platforms", "List account-type Platforms (templates) configured on the connected CyberArk vault, e.g. 'WinServerLocal', 'UnixSSH' -- required when onboarding a new Account.", action_type="read", chain_callable=True, data_model=PlatformList, event="cyberark-connector.list_platforms")
@@ -412,7 +412,7 @@ async def list_platforms(ctx, params: ListPlatformsParams) -> ActionResult:
         )
         for p in items
     ]
-    return ActionResult(data=PlatformList(platforms=platforms))
+    return ActionResult.success(PlatformList(platforms=platforms), summary="Platforms listed.")
 
 
 @chat.function("list_security_events", "Read the Security Events audit trail for the connected CyberArk vault -- who accessed or changed what, and when.", action_type="read", chain_callable=True, data_model=SecurityEventList, event="cyberark-connector.list_security_events")
@@ -435,4 +435,4 @@ async def list_security_events(ctx, params: ListSecurityEventsParams) -> ActionR
         )
         for e in items
     ]
-    return ActionResult(data=SecurityEventList(events=events))
+    return ActionResult.success(SecurityEventList(events=events), summary="Security events listed.")
