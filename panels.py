@@ -30,8 +30,7 @@ def _field(label: str, node: ui.UINode) -> ui.UINode:
 
 def _settings_button() -> ui.UINode:
     return ui.Button(
-        "App settings", variant="secondary", size="sm", full_width=True,
-        icon="Settings", on_click=ui.Call("__panel__cyberark_settings"),
+        "App settings", variant="secondary", size="sm", icon="Settings", on_click=ui.Call("__panel__cyberark_settings"),
     )
 
 
@@ -57,17 +56,17 @@ async def cyberark_sidebar(ctx, **kwargs) -> ui.UINode:
     return ui.Stack(direction="v", gap=1, align="stretch", children=[
         ui.Text(labels, variant="caption"),
         ui.Divider(),
-        ui.Button("Safes", variant="ghost", size="sm", full_width=True, icon="Lock",
+        ui.Button("Safes", variant="ghost", size="sm", icon="Lock",
                   on_click=ui.Call("__panel__cyberark_safes")),
-        ui.Button("Accounts", variant="ghost", size="sm", full_width=True, icon="KeyRound",
+        ui.Button("Accounts", variant="ghost", size="sm", icon="KeyRound",
                   on_click=ui.Call("__panel__cyberark_accounts")),
-        ui.Button("Access Requests", variant="ghost", size="sm", full_width=True, icon="ShieldQuestion",
+        ui.Button("Access Requests", variant="ghost", size="sm", icon="ShieldQuestion",
                   on_click=ui.Call("__panel__cyberark_access_requests")),
-        ui.Button("Applications", variant="ghost", size="sm", full_width=True, icon="AppWindow",
+        ui.Button("Applications", variant="ghost", size="sm", icon="AppWindow",
                   on_click=ui.Call("__panel__cyberark_applications")),
-        ui.Button("Platforms", variant="ghost", size="sm", full_width=True, icon="LayoutTemplate",
+        ui.Button("Platforms", variant="ghost", size="sm", icon="LayoutTemplate",
                   on_click=ui.Call("__panel__cyberark_platforms")),
-        ui.Button("Security Events", variant="ghost", size="sm", full_width=True, icon="ScrollText",
+        ui.Button("Security Events", variant="ghost", size="sm", icon="ScrollText",
                   on_click=ui.Call("__panel__cyberark_events")),
         ui.Divider(),
         _settings_button(),
